@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         MouseHunt - Favorite Setups+ (Temp Button Fix)
+// @name         MouseHunt - Favorite Setups+
 // @author       PersonalPalimpsest (asterios)
 // @namespace    https://greasyfork.org/en/users/900615-personalpalimpsest
 // @version      2.4.2
