@@ -1,18 +1,19 @@
 // ==UserScript==
-// @name         MouseHunt - Favorite Setups+
+// @name         MouseHunt - Favorite Setups+ (Temp Button Fix)
 // @author       PersonalPalimpsest (asterios)
 // @namespace    https://greasyfork.org/en/users/900615-personalpalimpsest
-// @version      2.4.1
+// @version      2.4.2
 // @description  Unlimited custom favorite trap setups!
 // @grant        GM_addStyle
 // @match        http://www.mousehuntgame.com/*
 // @match        https://www.mousehuntgame.com/*
 // ==/UserScript==
+
 GM_addStyle ( `
 #tsitu-fave-setups {
-  background-color: #F5F5F5;
+  background-color: #E4E4E4;
   position: fixed;
-  z-index: 69;
+  z-index: 100;
   left: 5px;
   top: 5px;
   border: solid 3px #696969;
@@ -114,7 +115,7 @@ GM_addStyle ( `
 
 #scroller:hover {
   /* the color we want the scrollbar on hover */
-  border-color: rgba(0, 0, 0, 0.3);
+  border-color: rgba(0, 0, 0, 0.5);
 }
 
 #scroller::-webkit-scrollbar,
@@ -195,6 +196,37 @@ GM_addStyle ( `
     text-overflow: ellipsis;
     min-width: max-content;
 }
+
+.trapSelectorView__activeCodexContainer {
+    display:flex;
+    position: relative;
+}
+#fave-setup-div {
+    position: absolute;
+    right: 0%;
+    bottom: 0%;
+    z-index: 80;
+    border-left: 2px solid;
+}
+#fave-setup-div:active {
+    filter: brightness(1.1);
+    font-weight: 500;
+    box-shadow: 2px 2px 8px #000000;
+}
+#fave-setup-button {
+    background-color: #F6F3EB;
+    border-radius: 5px;
+    border: 1px solid #534023;
+    box-shadow: -1px -1px 1px #d3cecb inset;
+    width: 57px;
+    height: 50px;
+}
+#fave-setup-button:hover {
+    filter: brightness(1.1);
+    border: 2px solid;
+    font-weight: 500;
+}
+
 #imgSpan {
   grid-area: c;
   //align-items: center;
@@ -1193,20 +1225,24 @@ GM_addStyle ( `
 
 	// Inject initial button/link into UI
 	function injectUI() {
-		document.querySelectorAll("#fave-setup-button").forEach(el => el.remove());
+		document.querySelectorAll("#fave-setup-div").forEach(el => el.remove());
 
 		const lsPlacement = localStorage.getItem("favorite-setup-placement");
 		if (lsPlacement === "tem") {
 			const target = document.querySelector(
-				".campPage-trap-armedItemContainer"
+                ".trapSelectorView__activeCodexContainer"
+				//".campPage-trap-armedItemContainer" <-- Original target selector, no longer exists after Codice UI update
+                //".trapSelectorView__armedItem" <-- Alternative for placement on Bait instead
 			);
 			if (target) {
 				const div = document.createElement("div");
-				div.id = "fave-setup-button";
+				div.id = "fave-setup-div";  //
 				const button = document.createElement("button");
-				button.innerText = "Favorite Setups";
+                button.id = "fave-setup-button";
+				button.innerText = "Favorite Setups+";
 				button.addEventListener("click", function () {
-					toggleRender()
+					toggleRender();
+                    event.stopPropagation(); // Stops the click from propagating to the parent container (in this case the "Codices" container)
 				});
 				button.addEventListener("contextmenu", function () {
 					if (confirm("Toggle 'Favorite Setups' placement?")) {
@@ -1216,7 +1252,7 @@ GM_addStyle ( `
 						localStorage.setItem("favorite-setup-placement", "tem");
 					}
 				});
-				div.appendChild(document.createElement("br"));
+				//div.appendChild(document.createElement("br"));
 				div.appendChild(button);
 				target.appendChild(div);
 			}
@@ -1224,8 +1260,8 @@ GM_addStyle ( `
 			const target = document.querySelector(".mousehuntHud-gameInfo");
 			if (target) {
 				const link = document.createElement("a");
-				link.id = "fave-setup-button";
-				link.innerText = "[Favorite Setups]";
+				link.id = "fave-setup-div";
+				link.innerText = "[Favorite Setups+]";
 				link.addEventListener("click", function () {
 					toggleRender();
 					return false; // Prevent default link clicked behavior
